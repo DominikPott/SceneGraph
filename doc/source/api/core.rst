@@ -116,8 +116,24 @@ core.plugins
 PluginManager
 ^^^^^^^^^^^^^
 The PluginManager manages how SceneGraph finds and loads plugins.
+::
+
+ from SceneGraph import core
+ g = core.Graph()
+
+ # access the graph's PluginManager
+ pm = g.pm
+
+ # query plugin search paths
+ pm.plugin_paths()
+
+ # query default modules
+ pm.default_modules
+
 
 .. automodule:: core.plugins
+    :members:
+
 .. autoclass:: PluginManager
     :members:
 
@@ -140,7 +156,8 @@ core.nodes
 ----------
 .. automodule:: core.nodes
     :members:
-    :undoc-members:
+    :special-members:
+    :inherited-members:
     :show-inheritance:
 
 .. _Node:
@@ -196,7 +213,7 @@ The NoteNode is a standard node with one no inputs or outputs. It simply display
 
 Metadata
 ^^^^^^^^
-The Metadata parses node metadata on disk.
+The :ref:`Metadata` class parses node metadata from **mtd** files.
 
 .. autoclass:: Metadata
     :members:

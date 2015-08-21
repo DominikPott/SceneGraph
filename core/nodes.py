@@ -34,18 +34,18 @@ class Node(object):
         self.nodeAttributeUpdated   = EventHandler(self)
 
         # basic node attributes        
-        self.name                   = name if name else self.default_name
-        self.color                  = kwargs.pop('color', self.default_color)
-        self.docstring              = ""
-        self._graph                 = kwargs.pop('_graph', None)
+        self.name                   = name if name else self.default_name                 # node name
+        self.color                  = kwargs.pop('color', self.default_color)             # node background color
+        self.docstring              = ""                                                  # node description  
+        self._graph                 = kwargs.pop('_graph', None)                          # reference to graph  
 
-        self.width                  = kwargs.pop('width', 100.0)
-        self.base_height            = kwargs.pop('base_height', 15.0)
-        self.force_expand           = kwargs.pop('force_expand', False)
-        self.pos                    = kwargs.pop('pos', (0.0, 0.0))
-        self.enabled                = kwargs.pop('enabled', True)
-        self.orientation            = kwargs.pop('orientation', 'horizontal')
-        self.style                  = kwargs.pop('style', 'default')
+        self.width                  = kwargs.pop('width', 100.0)                          # node width  
+        self.base_height            = kwargs.pop('base_height', 15.0)                     # base height of a node connection
+        self.force_expand           = kwargs.pop('force_expand', False)                   # force the node to draw as expanded
+        self.pos                    = kwargs.pop('pos', (0.0, 0.0))                       # x/y coordinates
+        self.enabled                = kwargs.pop('enabled', True)                         # node is active  
+        self.orientation            = kwargs.pop('orientation', 'horizontal')             # orientation (horiz or vert)
+        self.style                  = kwargs.pop('style', 'default')                      # draw style  
 
         # metadata
         metadata                    = kwargs.pop('metadata', dict())
@@ -65,7 +65,7 @@ class Node(object):
 
         # update attributes (if reading from scene)
         if attributes:
-            print '# DEBUG: %s attributes: ' % self.Class(), attributes
+            #print '# DEBUG: %s attributes: ' % self.Class(), attributes
             for attr_name, properties in attributes.iteritems():
                 if attr_name in self._attributes:
                     self._attributes.get(attr_name).update(**properties)
@@ -219,7 +219,7 @@ class Node(object):
         """
         Add an attribute.
 
-         .. todo::: 
+         .. todo:: 
              - add attribute type mapper.
         """
         attr_type = kwargs.get('attr_type', None)
@@ -388,6 +388,7 @@ class Node(object):
 
 
 class DagNode(Node):
+
     node_type     = 'dagnode'
     default_color = [172, 172, 172, 255]
     PRIVATE       = ['node_type']
@@ -412,6 +413,9 @@ class DagNode(Node):
     #- Transform ----
     @property
     def expanded(self):
+        """
+        Returns true if the node is set
+        """
         if self.force_expand:
             return True
         height = max(len(self.inputs), len(self.outputs))
@@ -572,8 +576,8 @@ class DagNode(Node):
         """
         Returns a list of connections (input & output)
 
-        returns:
-            (list) - list of connection names.
+        :returns: list of connection names.
+        :rtype: list 
         """
         conn_names = []
         for name in self._attributes:
@@ -718,11 +722,10 @@ class DagNode(Node):
         """
         Returns a named connection (input or output).
 
-        params:
-            name (str) - name of connection to query.
+        :param str name: name of connection to query.
 
-        returns:
-            (Attribute) - connection object.
+        :returns:  connection object.
+        :rtype: Attribute
         """
         conn = None
         if name not in self._attributes:
@@ -771,8 +774,9 @@ class DagNode(Node):
 class DefaultNode(DagNode):
 
     node_type     = 'default'
-    node_class    = 'evaluate'
-    node_category = 'core'
+    node_class    = 'misc'
+    node_category = ''
+    plugin_type   = 'core'
     default_name  = 'default'
     default_color = [172, 172, 172, 255]    
 
@@ -783,8 +787,9 @@ class DefaultNode(DagNode):
 class DotNode(DagNode):
 
     node_type     = 'dot'
-    node_class    = 'evaluate'
-    node_category = 'core'
+    node_class    = 'misc'
+    node_category = ''
+    plugin_type   = 'core'
     default_name  = 'dot'
     default_color = [172, 172, 172, 255]
 
@@ -843,8 +848,9 @@ class DotNode(DagNode):
 class NoteNode(Node):
 
     node_type     = 'note'
-    node_class    = 'output'
-    node_category = 'core'
+    node_class    = 'display'
+    node_category = ''
+    plugin_type   = 'core'
     default_name  = 'note'
     default_color = [255, 239, 62, 255]    
 
@@ -855,7 +861,7 @@ class NoteNode(Node):
         self.base_height    = 75
         self.font_size      = 6
         self.show_name      = kwargs.get('show_name', False)
-        self.doc_text       = kwargs.get('doc_text', "Sample note text.")        
+        self.doc_text       = kwargs.get('doc_text', "")        
 
     @property
     def data(self):
@@ -871,7 +877,6 @@ class NoteNode(Node):
                 data[attr] = getattr(self, attr)
         data.update(doc_text=self.doc_text, corner_loc=self.corner_loc, font_size=self.font_size, show_name=self.show_name)
         return data
-
 
 
 #- Metadata -----
@@ -901,7 +906,8 @@ class Metadata(object):
         """
         Update the data dictionary.
 
-        .. todo::: can't pass as **kwargs else we lose the order (why is that?)
+        .. todo:: 
+            - can't pass as **kwargs else we lose the order (why is that?)
         """
         if data:
             self._template_data = data
@@ -949,8 +955,8 @@ class Metadata(object):
         """
         Returns the metadata attributes in a given section.
 
-        returns:
-            (list) - list of metadata attribute names.
+        :returns: list of metadata attribute names.
+        :rtype: list
         """
         if section in self.sections():
             return self._data.get(section).keys()
@@ -960,12 +966,11 @@ class Metadata(object):
         """
         Return properties for a given section/attribute.
 
-        params:
-            section   (str)  - section name.
-            attribute (str)  - attribute name.
+        :param str section: section name.
+        :param str attribute: attribute name.
 
-        returns:
-            (list) - list of properties.
+        :returns: list of properties.
+        :rtype: list
         """
         if self.getAttr(section, attribute):
             return self.getAttr(section, attribute).keys()
@@ -975,8 +980,8 @@ class Metadata(object):
         """
         Returns a metadata attribute.
 
-        returns:
-            (dict) - attribute dictionary.
+        :returns: attribute dictionary.
+        :rtype: dict
         """
         if attribute in self.attributes(section):
             return self._data.get(section).get(attribute)
@@ -989,8 +994,8 @@ class Metadata(object):
         """
         Returns default node attributes.
 
-        returns:
-            (dict) - attributes dictionary.
+        :returns: attributes dictionary.
+        :rtype: dict
         """
         if self._default_attrs is None:
             return dict()
@@ -1003,8 +1008,8 @@ class Metadata(object):
         """
         Returns default transform attributes.
 
-        returns:
-            (dict) - attributes dictionary.
+        :returns: attributes dictionary.
+        :rtype: dict
         """
         if self._default_xform is None:
             return {}
@@ -1019,9 +1024,11 @@ class Metadata(object):
         """
         Parse the metadata and return input connections.
 
-        returns:
-            (list) - list of connection dictionaries.
-                     .. todo::: should we return an attribute object here?
+        .. todo::
+            - should we return an Attribute object here?
+
+        :returns:  list of connection dictionaries.
+        :rtype: list                     
         """
         connections = []
         for section in self.sections():
@@ -1042,9 +1049,11 @@ class Metadata(object):
         """
         Parse the metadata and return output connections.
 
-        returns:
-            (list) - list of connection dictionaries.
-                     .. todo::: should we return an attribute object here?
+        .. todo::
+            - should we return an Attribute object here?
+            
+        :returns:  list of connection dictionaries.
+        :rtype: list 
         """
         connections = []
         for section in self.sections():

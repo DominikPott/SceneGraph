@@ -6,7 +6,7 @@ import datetime
 
 
 LOGGERS = {}
-LOGGER_LEVEL = logging.INFO
+LOGGER_LEVEL = logging.WARNING
 
 
 def myLogger(name=None):

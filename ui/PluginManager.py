@@ -6,96 +6,101 @@ from SceneGraph import core
 from SceneGraph.options import SCENEGRAPH_PREFS_PATH
 
 
-class PluginManager(QtGui.QDialog):
-
+class PluginManager(QtGui.QMainWindow):
     def __init__(self, parent=None, plugins=[]):
-        QtGui.QDialog.__init__(self, parent)
+        QtGui.QMainWindow.__init__(self, parent)
+
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         self.fonts          = dict()
         self.settings_file  = os.path.join(SCENEGRAPH_PREFS_PATH, 'SceneGraph.ini')
         self._valid_plugins = []
 
         if parent is not None:
-            self.plugin_manager = parent.graph.plug_mgr
+            self.plugin_manager = parent.graph.pm
             self.qsettings = parent.qsettings
             self._valid_plugins = parent._valid_plugins
 
         else:
             graph = core.Graph()
-            self.plugin_manager = graph.plug_mgr
+            self.plugin_manager = graph.pm
 
             # todo: messy haxx
             from SceneGraph.ui import stylesheet
             from SceneGraph.ui import settings
-            self.stylesheet = stylesheet.StylesheetManager(self)
+            self.stylesheet = stylesheet.StyleManager(self)
             style_data = self.stylesheet.style_data()
             self.setStyleSheet(style_data)
             self.qsettings = settings.Settings(self.settings_file, QtCore.QSettings.IniFormat, parent=self)
 
         self.setupFonts()
-
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.mainLayout = QtGui.QVBoxLayout(self)
-        self.setLayout(self.mainLayout)
-        self.mainLayout.setObjectName("mainLayout")
         
-        self.tabWidget = QtGui.QTabWidget(self)
-        self.tabWidget.setObjectName("tabWidget")
-        self.plugins_tab = QtGui.QWidget()
-        self.plugins_tab.setObjectName("plugins_tab")
-        self.pluginsTabLayout = QtGui.QVBoxLayout(self.plugins_tab)
-        self.pluginsTabLayout.setSpacing(4)
-        self.pluginsTabLayout.setContentsMargins(4, 4, 4, 4)
-        self.pluginsTabLayout.setObjectName("pluginsTabLayout")
-        
-        self.pluginsGroup = QtGui.QGroupBox(self.plugins_tab)
-        self.pluginsGroup.setProperty("class", "Plugins")        
+        self.centralwidget = QtGui.QWidget(self)
+        self.centralwidget.setObjectName("centralwidget")
+        self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.pluginsGroup = QtGui.QGroupBox(self.centralwidget)
         self.pluginsGroup.setObjectName("pluginsGroup")
         self.pluginsGroupLayout = QtGui.QHBoxLayout(self.pluginsGroup)
         self.pluginsGroupLayout.setSpacing(6)
         self.pluginsGroupLayout.setContentsMargins(9, 9, 9, 9)
         self.pluginsGroupLayout.setObjectName("pluginsGroupLayout")
-        
+        self.pluginsInfoLayout = QtGui.QVBoxLayout()
+        self.pluginsInfoLayout.setSpacing(9)
+        self.pluginsInfoLayout.setContentsMargins(9, 9, 9, 9)
+        self.pluginsInfoLayout.setObjectName("pluginsInfoLayout")
+
         # table view
         self.pluginView = TableView(self.pluginsGroup)
-        self.pluginView.setProperty("class", "Plugins")
-
         self.pluginView.setObjectName("pluginView")
-        self.pluginsGroupLayout.addWidget(self.pluginView)
+        self.pluginsInfoLayout.addWidget(self.pluginView)
+        self.controlsLayout = QtGui.QHBoxLayout()
+        self.controlsLayout.setObjectName("controlsLayout")
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.controlsLayout.addItem(spacerItem)
+        self.check_show_all = QtGui.QCheckBox(self.pluginsGroup)
+        self.check_show_all.setObjectName("check_show_all")
+        self.controlsLayout.addWidget(self.check_show_all)
+        self.pluginsInfoLayout.addLayout(self.controlsLayout)
+        self.pluginInfo = QtGui.QPlainTextEdit(self.pluginsGroup)
+        self.pluginInfo.setObjectName("pluginInfo")
+        self.pluginInfo.setProperty("class", "Console")
+        self.pluginsInfoLayout.addWidget(self.pluginInfo)
+        self.pluginsInfoLayout.setStretch(0, 1)
+        self.pluginsInfoLayout.setStretch(2, 1)
+        self.pluginsGroupLayout.addLayout(self.pluginsInfoLayout)
         self.pluginButtonsLayout = QtGui.QVBoxLayout()
         self.pluginButtonsLayout.setSpacing(4)
         self.pluginButtonsLayout.setObjectName("pluginButtonsLayout")
-        
-        # buttons
         self.button_disable = QtGui.QToolButton(self.pluginsGroup)
         self.button_disable.setMinimumSize(QtCore.QSize(75, 0))
         self.button_disable.setObjectName("button_disable")
-        self.button_disable.setProperty("class", "Prefs")
         self.pluginButtonsLayout.addWidget(self.button_disable)
-
         self.button_reload = QtGui.QToolButton(self.pluginsGroup)
         self.button_reload.setMinimumSize(QtCore.QSize(75, 0))
         self.button_reload.setObjectName("button_reload")
-        self.button_reload.setProperty("class", "Prefs")
         self.pluginButtonsLayout.addWidget(self.button_reload)
-
         self.button_load = QtGui.QToolButton(self.pluginsGroup)
         self.button_load.setMinimumSize(QtCore.QSize(75, 0))
-        self.button_load.setObjectName("button_load")        
-        self.button_load.setProperty("class", "Prefs")
+        self.button_load.setObjectName("button_load")
         self.pluginButtonsLayout.addWidget(self.button_load)
-
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.pluginButtonsLayout.addItem(spacerItem)
+        spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.pluginButtonsLayout.addItem(spacerItem1)
         self.pluginsGroupLayout.addLayout(self.pluginButtonsLayout)
-        self.pluginsTabLayout.addWidget(self.pluginsGroup)
-        self.tabWidget.addTab(self.plugins_tab, "")
-        self.mainLayout.addWidget(self.tabWidget)
-        self.buttonBox = QtGui.QDialogButtonBox(self)
+        self.verticalLayout.addWidget(self.pluginsGroup)
+        self.buttonBox = QtGui.QDialogButtonBox(self.centralwidget)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
-        self.mainLayout.addWidget(self.buttonBox)
+        self.verticalLayout.addWidget(self.buttonBox)
+        self.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(self)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 805, 25))
+        self.menubar.setObjectName("menubar")
+        self.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(self)
+        self.statusbar.setObjectName("statusbar")
+        self.setStatusBar(self.statusbar)
 
         # table model
         self.tableModel = PluginTableModel(parent=self)
@@ -115,39 +120,55 @@ class PluginManager(QtGui.QDialog):
         self.button_disable.setText("Disable")
         self.button_reload.setText("Reload")
         self.button_load.setText("Load...")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.plugins_tab), "Plugins")
+        self.check_show_all.setText("show core plugins")
 
         # NYI
         self.button_load.setEnabled(False)
 
     def connectSignals(self):
+        """
+        Setup widget signals.
+        """
         self.button_disable.clicked.connect(self.disabledAction)
-        self.button_reload.clicked.connect(self.checkPlugins)
+        self.button_reload.clicked.connect(self.reloadAction)
         self.buttonBox.accepted.connect(self.acceptedAction)
         self.buttonBox.rejected.connect(self.close)
-
+        self.check_show_all.toggled.connect(self.toggleShowAllAction)
         self.tableSelectionModel.selectionChanged.connect(self.tableSelectionChanged)
         #self.pluginView.viewport().mouseMoveEvent()
 
-    def checkPlugins(self):
+    def reloadAction(self):
+        show_all = self.check_show_all.isChecked()
+        self.checkPlugins(show_all)
+
+    def toggleShowAllAction(self, val):
+        self.checkPlugins(val)
+
+    def checkPlugins(self, show_all=False):
         """
         Build the table.
+
+        :param bool show_all: show core plugins as well as builtins.
         """
         data = []
-        plugins = self.plugin_manager._node_data
+        plugins = self.plugin_manager._plugin_data
         self.tableModel.clear()
-        for pname in plugins:
 
-            category = plugins.get(pname).get('category', None)
+        for pname in plugins:
+            plugin_type = plugins.get(pname).get('plugin_type', None)
 
             # don't allow core plugins to be disabled
-            if category == 'core':
+            if plugin_type == 'core' and not show_all:
                 continue 
 
             pattrs = plugins.get(pname)
             dagnode = pattrs.get('dagnode', None)
             src = pattrs.get('source')
-            enabled =pattrs.get('enabled')
+            enabled = pattrs.get('enabled')
+            pclass = pattrs.get('class')
+            widget = pattrs.get('widget').__name__
+            category = pattrs.get('category')
+
             if dagnode is not None:
                 dagnode=dagnode.__name__
             
@@ -156,14 +177,14 @@ class PluginManager(QtGui.QDialog):
                 widget=widget.__name__
 
             metadata = pattrs.get('metadata', None)
-            data.append([pname, dagnode, src, enabled])
+            data.append([pname, plugin_type, pclass, category, dagnode, widget, enabled])
 
         self.tableModel.addPlugins(data)
 
     def selectedPlugins(self):
         """
-        returns:
-            (list) - list of plugin attributes.
+        :returns: list of plugin attributes.
+        :rtype: list
         """
         if not self.tableSelectionModel.selectedRows():
             return []
@@ -173,13 +194,16 @@ class PluginManager(QtGui.QDialog):
         return plugins
 
     def tableSelectionChanged(self):
+        """
+        Runs when the selection changes.
+        """
         plugins = self.selectedPlugins()
 
         enabled = True
         if plugins:
             for plugin in plugins:
-                plugin_name = [self.tableModel.PLUGIN_NAME_ROW]
-                if not plugin[self.tableModel.PLUGIN_ENABLED_ROW]:
+                plugin_name = [self.tableModel.PLUGIN_NAME_ROLE]
+                if not plugin[self.tableModel.PLUGIN_ENABLED_ROLE]:
                     enabled = False
 
         button_text = 'Disable'
@@ -187,16 +211,23 @@ class PluginManager(QtGui.QDialog):
             button_text = 'Enable'
 
         self.button_disable.setText(button_text)
+        self.buildPluginInfo(plugins)
 
     def disabledAction(self):
+        indexes = self.tableSelectionModel.selectedRows()
         plugins = self.selectedPlugins()
         if plugins:
             for plugin in plugins:
-                plugin_name = plugin[self.tableModel.PLUGIN_NAME_ROW]
-                enabled = bool(plugin[self.tableModel.PLUGIN_ENABLED_ROW])
+                plugin_name = plugin[self.tableModel.PLUGIN_NAME_ROLE]
+                enabled = bool(plugin[self.tableModel.PLUGIN_ENABLED_ROLE])
 
                 self.plugin_manager.enable(plugin_name, not enabled)
-                self.checkPlugins()
+                self.checkPlugins(self.check_show_all.isChecked())
+
+        self.tableSelectionModel.clearSelection()
+
+        for i in indexes:
+            self.tableSelectionModel.select(i, QtGui.QItemSelectionModel.Select)
 
     def acceptedAction(self):
         self.writeSettings()
@@ -238,6 +269,47 @@ class PluginManager(QtGui.QDialog):
         self.fonts["disabled"].setPointSize(size)
         self.fonts["disabled"].setItalic(True)
 
+    def buildPluginInfo(self, plugins=[]):
+        """
+        Builds the plugin info for the selected plugins.
+        """
+        self.pluginInfo.clear()
+        if not plugins:
+            return
+
+        plug_detail = "(%d plugins selected)" % len(plugins)
+
+        if len(plugins) is 1:
+            pattrs =plugins[0]
+
+            pname = pattrs[0]  # plugin name
+            pptype = pattrs[1] # plugin type
+
+
+            for node_name in  self.plugin_manager._plugin_data:
+                if node_name == pname:
+                    node_attrs = self.plugin_manager._plugin_data.get(node_name)
+
+                    dagnode = node_attrs.get('dagnode').__name__
+                    src_file = node_attrs.get('source')
+                    node_class = node_attrs.get('class')
+                    plugin_type = node_attrs.get('plugin_type')
+                    node_category = node_attrs.get('category')
+                    widget = node_attrs.get('widget').__name__
+                    
+                    
+                    plug_detail = """Plugin Detail:
+
+Node:   %s
+Widget: %s
+Type:   %s
+Class:  %s
+Source: %s
+
+""" % (dagnode, widget, plugin_type, node_class, src_file)
+        
+        self.pluginInfo.setPlainText(plug_detail)
+
 
 class TableView(QtGui.QTableView):
 
@@ -264,7 +336,7 @@ class TableView(QtGui.QTableView):
         #self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        self.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.setSelectionBehavior(QtGui.QTableView.SelectRows)
         self.setIconSize(QtCore.QSize(16, 16))
         self.setShowGrid(False)
         self.setGridStyle(QtCore.Qt.NoPen)
@@ -281,13 +353,15 @@ class TableView(QtGui.QTableView):
 
     def getSelectedIndexes(self):
         """
-        returns the selected indexes
+        :returns: selected indexes.
+        :rtype: list
         """
         return self.selectionModel().selectedIndexes()
 
     def getSelectedRows(self):
         """
-        returns the selected rows
+        :returns: selected rows.
+        :rtype: list
         """
         return self.selectionModel().selectedRows()
 
@@ -305,12 +379,15 @@ class TableView(QtGui.QTableView):
 
 class PluginTableModel(QtCore.QAbstractTableModel):   
 
-    PLUGIN_NAME_ROW     = 0
-    PLUGIN_DAGNODE_ROW  = 1
-    PLUGIN_FILE_ROW     = 2    
-    PLUGIN_ENABLED_ROW  = 3
+    PLUGIN_NAME_ROLE        = 0    
+    PLUGIN_CLASS_ROLE       = 1
+    PLUGIN_DAGNODE_ROLE     = 2
+    PLUGIN_TYPE_ROLE        = 3 
+    PLUGIN_CATEGORY_ROLE    = 4 
+    PLUGIN_WIDGET_ROLE      = 5    
+    PLUGIN_ENABLED_ROLE     = 6
 
-    def __init__(self, nodes=[], headers=['Plugin', 'Node Type', 'Source', 'Enabled'], parent=None, **kwargs):
+    def __init__(self, nodes=[], headers=['Node Type', 'Plugin Type', 'Plugin Class', 'Category', 'DagNode', 'Widget',  'Enabled'], parent=None, **kwargs):
         QtCore.QAbstractTableModel.__init__(self, parent)
 
         self.fonts      = parent.fonts
@@ -363,20 +440,33 @@ class PluginTableModel(QtCore.QAbstractTableModel):
         column  = index.column()
         plugin  = self.plugins[row]
 
-        is_enabled = plugin[self.PLUGIN_ENABLED_ROW]
+        is_enabled = plugin[self.PLUGIN_ENABLED_ROLE]
+
 
         if role == QtCore.Qt.DisplayRole:
-            if column == self.PLUGIN_NAME_ROW:
-                return plugin[self.PLUGIN_NAME_ROW]
+            if column == self.PLUGIN_NAME_ROLE:
+                return plugin[self.PLUGIN_NAME_ROLE]
 
-            if column == self.PLUGIN_FILE_ROW:
-                return plugin[self.PLUGIN_FILE_ROW]
+            if column == self.PLUGIN_DAGNODE_ROLE:
+                return plugin[self.PLUGIN_DAGNODE_ROLE]
 
-            if column == self.PLUGIN_DAGNODE_ROW:
-                return plugin[self.PLUGIN_DAGNODE_ROW]
+            if column == self.PLUGIN_TYPE_ROLE:
+                return plugin[self.PLUGIN_TYPE_ROLE]
 
-            if column == self.PLUGIN_ENABLED_ROW:
-                return plugin[self.PLUGIN_ENABLED_ROW]
+            if column == self.PLUGIN_DAGNODE_ROLE:
+                return plugin[self.PLUGIN_DAGNODE_ROLE]
+
+            if column == self.PLUGIN_CLASS_ROLE:
+                return plugin[self.PLUGIN_CLASS_ROLE]
+
+            if column == self.PLUGIN_CATEGORY_ROLE:
+                return plugin[self.PLUGIN_CATEGORY_ROLE]
+
+            if column == self.PLUGIN_WIDGET_ROLE:
+                return plugin[self.PLUGIN_WIDGET_ROLE]
+
+            if column == self.PLUGIN_ENABLED_ROLE:
+                return plugin[self.PLUGIN_ENABLED_ROLE]
 
         elif role == QtCore.Qt.FontRole:
             font = self.fonts.get("ui")

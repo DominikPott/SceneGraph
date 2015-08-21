@@ -6,9 +6,10 @@ class AssetNode(DagNode):
     
     node_type     = 'asset'
     node_class    = 'container'
-    node_category = 'builtin'
+    node_category = '3d'
+    plugin_type   = 'builtin'
     default_name  = 'asset'
     default_color = [174, 188, 43, 255]
 
     def __init__(self, name=None, **kwargs):
-        DagNode.__init__(self, name, **kwargs)
+        super(AssetNode, self).__init__(name, **kwargs)

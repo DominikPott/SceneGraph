@@ -89,17 +89,14 @@ QDockWidget::float-button, QDockWidget::close-button{
     padding: 0px;
     icon-size: 16px;
     background: transparent;
+
 }
 
-QDockWidget::float-button:hover{
-    /*titlebar-normal-icon: url(:/icons/icons/ui-dock-float-on.png);*/
-    image: url(:/icons/icons/ui-dock-float-on.png);
+QDockWidget QAbstractButton::hover{
+    qproperty-State_On: url(:/icons/icons/ui-dock-close-hover.png);
+    qproperty-toolTip: "Go fuck yourself";
 }
 
-QDockWidget::close-button:hover{
-    /*titlebar-close-icon: url(:/icons/icons/ui-dock-close-on.png);*/
-    image: url(:/icons/icons/ui-dock-close-on.png);
-}
 
 /*
 ##### END DOCKS #####
@@ -108,6 +105,11 @@ QDockWidget::close-button:hover{
 /*
 ##### BUTTONS #####
 */
+
+QToolButton.AEToolButton {
+    background: none;
+    border: none;
+}
 
 QPushButton, QToolButton{
     background-color: @button-bg-color;
@@ -772,6 +774,10 @@ QCheckBox::indicator {
     height: 13px;
 }
 
+QCheckBox::indicator:hover {
+    border: 1px solid @widget-bg-hover;
+}
+
 QCheckBox::indicator {
     border: 1px solid @line-border-light;
     border-radius: 2px;
@@ -801,9 +807,6 @@ QFrame QGraphicsView{
 }
 
 
-QAbstractButton#qt_dockwidget_closebutton{qproperty-toolTip: "Close";}
-QAbstractButton#qt_dockwidget_floatbutton{qproperty-toolTip: "Restore";}
-
 QTableView#tableWidget QHeaderView{
     /* draw the hole hor top & bottom line for the header *//*
     height: 24px;
@@ -827,4 +830,16 @@ QTableView#tableWidget QHeaderView::section:horizontal{
     border-right: 1px solid #b1b1b5;
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f4f4f6, stop:1 #ceced6);
  }
+
+QTabBar::close-button  {
+    image: url(:/icons/icons/ui-dock-close-off.png);
+}
+
+QTabBar::close-button:pressed{
+    image: url(:/icons/icons/ui-dock-close-on.png);
+}
+
+QTabBar::close-button:hover{
+    image: url(:/icons/icons/ui-dock-close-hover.png);
+}
 */

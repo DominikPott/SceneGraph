@@ -108,18 +108,33 @@ The Settings is a custom QSettings object for managing SceneGraph user preferenc
     :members:
 
 
+.. automodule:: ui.stylesheet
+
 ui.stylesheet
 -------------
-.. _StylesheetManager:
+.. _StyleManager:
 
-StylesheetManager
-^^^^^^^^^^^^^^^^^
-The StylesheetManager parses stylesheets and font/color preferences.
+StyleManager
+^^^^^^^^^^^^
+The :ref:`StyleManager` scans the application config paths as well as external config paths for stylesheets as well as font & palette configs. stylesheets and font/color preferences. The :ref:`StyleManager` also builds font lists for each platform.
 
-.. automodule:: ui.stylesheet
-.. autoclass:: StylesheetManager
+.. autoclass:: StyleManager
     :members:
 
+
+.. _StyleParser:
+
+StyleParser
+^^^^^^^^^^^
+The :ref:`StyleParser` reads stylesheet files and outputs style data (as a string) that can be applied to any Qt widget. :ref:`StyleParser` also performs simple sass-style substitution via font & color palette configs. To use properly you'll need:
+
+- qss stylesheet
+- font config
+- color palette config
+
+
+.. autoclass:: StyleParser
+    :members:
 
 .. automodule:: ui.node_widgets
 

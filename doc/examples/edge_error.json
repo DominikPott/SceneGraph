@@ -1,0 +1,565 @@
+{
+    "directed": true,
+    "graph": [
+        [
+            "preferences",
+            {
+                "render_fx": false,
+                "font_family_ui": "DejaVu Sans",
+                "autosave_inc": 5000,
+                "antialiasing": 2,
+                "font_size_mono": "10pt",
+                "stylesheet_name": "default",
+                "font_size_ui": "8pt",
+                "edge_type": "bezier",
+                "font_family_nodes": "Menlo",
+                "use_gl": false,
+                "font_family_mono": "DejaVu Sans Mono",
+                "ignore_scene_prefs": false,
+                "font_style": "default",
+                "palette_style": "default",
+                "viewport_mode": "smart"
+            }
+        ],
+        [
+            "scene",
+            "/home/michael/graphs/edge_error.json"
+        ],
+        [
+            "scene_size",
+            [
+                -5000.0,
+                -5000.0,
+                5000.0,
+                5000.0
+            ]
+        ],
+        [
+            "environment",
+            "ui"
+        ],
+        [
+            "view_center",
+            [
+                -9.838217992527007,
+                -330.2830326062638
+            ]
+        ],
+        [
+            "view_size",
+            [
+                795,
+                732
+            ]
+        ],
+        [
+            "view_scale",
+            [
+                0.7115109672622741,
+                0.7115109672622741
+            ]
+        ],
+        [
+            "api_version",
+            0.691
+        ]
+    ],
+    "nodes": [
+        {
+            "force_expand": false,
+            "outMesh": {
+                "value": null,
+                "_edges": [],
+                "attr_type": "node",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "orientation": "horizontal",
+            "color": [
+                21,
+                140,
+                167,
+                255
+            ],
+            "enabled": true,
+            "docstring": "",
+            "pos": [
+                -491.87470817487684,
+                -484.01355590574104
+            ],
+            "width": 100.0,
+            "node_type": "model",
+            "file": {
+                "value": null,
+                "_edges": [],
+                "attr_type": "file",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "output": {
+                "value": null,
+                "_edges": [
+                    "(e4d36a4e-65ae-4fbc-b09c-df79dccd9541,0112f3f7-a7fe-4671-973b-56575ae3f544)"
+                ],
+                "attr_type": "multi",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "base_height": 15.0,
+            "id": "e4d36a4e-65ae-4fbc-b09c-df79dccd9541",
+            "Alembic": {
+                "value": null,
+                "_edges": [],
+                "attr_type": "file",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "name": "model1"
+        },
+        {
+            "force_expand": false,
+            "orientation": "dot",
+            "color": [
+                172,
+                172,
+                172,
+                255
+            ],
+            "enabled": true,
+            "docstring": "",
+            "pos": [
+                77.96979677938342,
+                -452.82109200233214
+            ],
+            "width": 8.0,
+            "node_type": "dot",
+            "output": {
+                "value": null,
+                "_edges": [
+                    "(60ebc75c-9b2e-45d5-8162-d5c22e9a8638,0b41a3fb-9011-45be-86b1-4f8cb3329bf3)"
+                ],
+                "attr_type": "multi",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "input": {
+                "value": null,
+                "_edges": [
+                    "(dcb8a9a3-7903-41b6-916f-97849dbb9b4c,60ebc75c-9b2e-45d5-8162-d5c22e9a8638)"
+                ],
+                "attr_type": "node",
+                "connectable": true,
+                "connection_type": "input",
+                "user": true
+            },
+            "base_height": 8.0,
+            "id": "60ebc75c-9b2e-45d5-8162-d5c22e9a8638",
+            "name": "dot2"
+        },
+        {
+            "force_expand": false,
+            "style": "default",
+            "font_size": 6,
+            "orientation": "horizontal",
+            "color": [
+                255,
+                239,
+                62,
+                255
+            ],
+            "enabled": true,
+            "show_name": false,
+            "docstring": "",
+            "pos": [
+                89.17744914935756,
+                -523.0090880278075
+            ],
+            "height": 80.19192852151576,
+            "width": 134.11829943290513,
+            "node_type": "note",
+            "doc_text": "This error happened when dot2 was popped...it still maintains a connection to the original two nodes. ",
+            "corner_loc": "top",
+            "base_height": 80.19192852151576,
+            "id": "8b2a9f00-ab6b-4eff-8200-626330d402d2",
+            "name": "note1"
+        },
+        {
+            "force_expand": false,
+            "orientation": "dot",
+            "color": [
+                172,
+                172,
+                172,
+                255
+            ],
+            "enabled": true,
+            "docstring": "",
+            "pos": [
+                -64.7293438608184,
+                -320.56593283255734
+            ],
+            "width": 8.0,
+            "node_type": "dot",
+            "output": {
+                "value": null,
+                "_edges": [
+                    "(dcb8a9a3-7903-41b6-916f-97849dbb9b4c,60ebc75c-9b2e-45d5-8162-d5c22e9a8638)",
+                    "(dcb8a9a3-7903-41b6-916f-97849dbb9b4c,0b41a3fb-9011-45be-86b1-4f8cb3329bf3)"
+                ],
+                "attr_type": "multi",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "input": {
+                "value": null,
+                "_edges": [
+                    "(0112f3f7-a7fe-4671-973b-56575ae3f544,dcb8a9a3-7903-41b6-916f-97849dbb9b4c)"
+                ],
+                "attr_type": "node",
+                "connectable": true,
+                "connection_type": "input",
+                "user": true
+            },
+            "base_height": 8.0,
+            "id": "dcb8a9a3-7903-41b6-916f-97849dbb9b4c",
+            "name": "dot1"
+        },
+        {
+            "force_expand": false,
+            "outMesh": {
+                "value": null,
+                "_edges": [],
+                "attr_type": "node",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "orientation": "horizontal",
+            "color": [
+                139,
+                210,
+                244,
+                255
+            ],
+            "enabled": true,
+            "docstring": "",
+            "pos": [
+                -419.2410934911503,
+                -243.53247768336922
+            ],
+            "width": 100.0,
+            "node_type": "model",
+            "file": {
+                "value": null,
+                "_edges": [],
+                "attr_type": "file",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "output": {
+                "value": null,
+                "_edges": [
+                    "(d2366ee0-f82a-47f3-96f2-5a508bedea59,0112f3f7-a7fe-4671-973b-56575ae3f544)"
+                ],
+                "attr_type": "multi",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "base_height": 15.0,
+            "id": "d2366ee0-f82a-47f3-96f2-5a508bedea59",
+            "Alembic": {
+                "value": null,
+                "_edges": [],
+                "attr_type": "file",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "name": "model2"
+        },
+        {
+            "force_expand": false,
+            "lookdev": {
+                "label": "Lookdev",
+                "value": null,
+                "desc": "lookdev node input.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "orientation": "horizontal",
+            "color": [
+                236,
+                51,
+                39,
+                255
+            ],
+            "enabled": true,
+            "docstring": "",
+            "pos": [
+                179.24881534704087,
+                -194.97715372972482
+            ],
+            "texture": {
+                "label": "Textures",
+                "value": null,
+                "_edges": [
+                    "(690e4fca-d7ea-4839-9c59-9246a0c84e56,0b41a3fb-9011-45be-86b1-4f8cb3329bf3)"
+                ],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "width": 100.0,
+            "node_type": "asset",
+            "output": {
+                "value": null,
+                "_edges": [],
+                "attr_type": "multi",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "rig": {
+                "label": "Rig",
+                "value": null,
+                "desc": "rigging file.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "model": {
+                "label": "Model",
+                "value": null,
+                "desc": "model node input.",
+                "_edges": [
+                    "(60ebc75c-9b2e-45d5-8162-d5c22e9a8638,0b41a3fb-9011-45be-86b1-4f8cb3329bf3)",
+                    "(dcb8a9a3-7903-41b6-916f-97849dbb9b4c,0b41a3fb-9011-45be-86b1-4f8cb3329bf3)"
+                ],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "base_height": 15.0,
+            "id": "0b41a3fb-9011-45be-86b1-4f8cb3329bf3",
+            "name": "asset1"
+        },
+        {
+            "force_expand": false,
+            "disp": {
+                "label": "Displacement",
+                "value": null,
+                "desc": "Displacement texture directory.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "orientation": "horizontal",
+            "normal": {
+                "label": "Normal Map",
+                "value": null,
+                "desc": "Normal texture directory.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "color": [
+                111,
+                178,
+                68,
+                255
+            ],
+            "enabled": true,
+            "bump": {
+                "label": "Bump",
+                "value": null,
+                "desc": "Bump texture directory.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "gloss": {
+                "label": "Glossiness",
+                "value": null,
+                "desc": "Glossiness texture directory.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "docstring": "",
+            "pos": [
+                -171.43618303036519,
+                -48.6247761716493
+            ],
+            "diffuse": {
+                "label": "Diffuse",
+                "value": null,
+                "desc": "Diffuse texture directory.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "width": 100.0,
+            "node_type": "texture",
+            "specular": {
+                "label": "Specular",
+                "value": null,
+                "desc": "Specular texture directory.",
+                "_edges": [],
+                "attr_type": "string",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "output": {
+                "value": null,
+                "_edges": [
+                    "(690e4fca-d7ea-4839-9c59-9246a0c84e56,0b41a3fb-9011-45be-86b1-4f8cb3329bf3)"
+                ],
+                "attr_type": "multi",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "base_height": 15.0,
+            "id": "690e4fca-d7ea-4839-9c59-9246a0c84e56",
+            "name": "texture1"
+        },
+        {
+            "force_expand": false,
+            "orientation": "horizontal",
+            "color": [
+                255,
+                170,
+                127
+            ],
+            "enabled": true,
+            "docstring": "",
+            "pos": [
+                -203.17629414949326,
+                -414.35167187751574
+            ],
+            "inputB": {
+                "value": null,
+                "_edges": [
+                    "(d2366ee0-f82a-47f3-96f2-5a508bedea59,0112f3f7-a7fe-4671-973b-56575ae3f544)"
+                ],
+                "attr_type": "node",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "width": 100.0,
+            "node_type": "merge",
+            "inputA": {
+                "value": null,
+                "_edges": [
+                    "(e4d36a4e-65ae-4fbc-b09c-df79dccd9541,0112f3f7-a7fe-4671-973b-56575ae3f544)"
+                ],
+                "attr_type": "node",
+                "connectable": true,
+                "connection_type": "input"
+            },
+            "output": {
+                "value": null,
+                "_edges": [
+                    "(0112f3f7-a7fe-4671-973b-56575ae3f544,dcb8a9a3-7903-41b6-916f-97849dbb9b4c)"
+                ],
+                "attr_type": "merge",
+                "connectable": true,
+                "connection_type": "output"
+            },
+            "base_height": 15.0,
+            "id": "0112f3f7-a7fe-4671-973b-56575ae3f544",
+            "name": "merge1"
+        }
+    ],
+    "links": [
+        {
+            "style": "solid",
+            "src_id": "e4d36a4e-65ae-4fbc-b09c-df79dccd9541",
+            "target": 7,
+            "weight": 1.0,
+            "dest_id": "0112f3f7-a7fe-4671-973b-56575ae3f544",
+            "source": 0,
+            "edge_type": "bezier",
+            "key": "attributes",
+            "src_attr": "output",
+            "dest_attr": "inputA"
+        },
+        {
+            "style": "solid",
+            "src_id": "60ebc75c-9b2e-45d5-8162-d5c22e9a8638",
+            "target": 5,
+            "weight": 1.0,
+            "dest_id": "0b41a3fb-9011-45be-86b1-4f8cb3329bf3",
+            "source": 1,
+            "edge_type": "bezier",
+            "key": "attributes",
+            "src_attr": "output",
+            "dest_attr": "model"
+        },
+        {
+            "style": "solid",
+            "src_id": "dcb8a9a3-7903-41b6-916f-97849dbb9b4c",
+            "target": 1,
+            "weight": 1.0,
+            "dest_id": "60ebc75c-9b2e-45d5-8162-d5c22e9a8638",
+            "source": 3,
+            "edge_type": "bezier",
+            "key": "attributes",
+            "src_attr": "output",
+            "dest_attr": "input"
+        },
+        {
+            "style": "solid",
+            "src_id": "dcb8a9a3-7903-41b6-916f-97849dbb9b4c",
+            "target": 5,
+            "weight": 1.0,
+            "dest_id": "0b41a3fb-9011-45be-86b1-4f8cb3329bf3",
+            "source": 3,
+            "edge_type": "bezier",
+            "key": "attributes",
+            "src_attr": "output",
+            "dest_attr": "model"
+        },
+        {
+            "style": "solid",
+            "src_id": "d2366ee0-f82a-47f3-96f2-5a508bedea59",
+            "target": 7,
+            "weight": 1.0,
+            "dest_id": "0112f3f7-a7fe-4671-973b-56575ae3f544",
+            "source": 4,
+            "edge_type": "bezier",
+            "key": "attributes",
+            "src_attr": "output",
+            "dest_attr": "inputB"
+        },
+        {
+            "style": "solid",
+            "src_id": "690e4fca-d7ea-4839-9c59-9246a0c84e56",
+            "target": 5,
+            "weight": 1.0,
+            "dest_id": "0b41a3fb-9011-45be-86b1-4f8cb3329bf3",
+            "source": 6,
+            "edge_type": "bezier",
+            "key": "attributes",
+            "src_attr": "output",
+            "dest_attr": "texture"
+        },
+        {
+            "style": "solid",
+            "src_id": "0112f3f7-a7fe-4671-973b-56575ae3f544",
+            "target": 3,
+            "weight": 1.0,
+            "dest_id": "dcb8a9a3-7903-41b6-916f-97849dbb9b4c",
+            "source": 7,
+            "edge_type": "bezier",
+            "key": "attributes",
+            "src_attr": "output",
+            "dest_attr": "input"
+        }
+    ],
+    "multigraph": true
+}

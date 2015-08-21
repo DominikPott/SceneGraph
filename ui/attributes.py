@@ -218,9 +218,6 @@ class AttributeEditor(QtGui.QWidget):
     def createContextMenu(self):
         """
         Build a context menu at the current pointer pos.
-
-        params:
-            parent (QWidget) - parent widget.
         """
         popup_menu = QtGui.QMenu(self)
         popup_menu.clear()
@@ -1733,8 +1730,11 @@ class FileEditor(QtGui.QWidget):
         self.file_edit = QtGui.QLineEdit(self)
         self.file_edit.setObjectName("file_edit")
         self.mainLayout.addWidget(self.file_edit)
+
+        # browse button
         self.button_browse = QtGui.QToolButton(self)
         self.button_browse.setObjectName("button_browse")
+        self.button_browse.setProperty("class", "AEToolButton")
         self.mainLayout.addWidget(self.button_browse)
 
         # set the completion model

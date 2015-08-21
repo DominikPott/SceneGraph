@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+from pkgutil import extend_path
+__path__ = extend_path(__path__, __name__)
+
+
 from . import logger
 log = logger.myLogger()
 
@@ -15,11 +19,6 @@ EventHandler            = events.EventHandler
 from . import metadata
 # Parsers/Managers
 MetadataParser          = metadata.MetadataParser 
-
-
-# Plugin Manager
-from . import plugins
-PluginManager           = plugins.PluginManager
 
 
 from . import graph

@@ -22,9 +22,9 @@ regex = dict(
     )
 
 
-class StylesheetManager(object):
+class StyleManager(object):
     """
-    The StylesheetManager reads and parses stylesheet data, plus does some basic sass 
+    The StyleManager reads and parses stylesheet data, plus does some basic sass 
     substitution via external config files.
 
     :param QtGui.QWidget parent: parent UI.
@@ -130,7 +130,7 @@ class StylesheetManager(object):
         :returns: list of stylesheet names.
         :rtype: list
         """
-        return self._qss_files.keys()    
+        return sorted(self._qss_files.keys())  
 
     @property
     def palette_styles(self):
@@ -146,8 +146,9 @@ class StylesheetManager(object):
                 value = files.get('palette', None)
                 if value is not None:
                     if os.path.exists(value):
-                        styles.append(style_name)
-        return styles
+                        if value not in styles:
+                            styles.append(style_name)
+        return sorted(styles)
 
     @property
     def font_styles(self):
@@ -163,8 +164,9 @@ class StylesheetManager(object):
                 value = files.get('fonts', None)
                 if value is not None:
                     if os.path.exists(value):
-                        styles.append(style_name)
-        return styles
+                        if value not in styles:
+                            styles.append(style_name)
+        return sorted(styles)
 
     @property
     def qss_files(self):
@@ -366,7 +368,9 @@ class StylesheetManager(object):
         for font_name in self._fonts.get('ui'):
             if font_name in valid:
                 families.append(font_name)
-        return families
+                if font_name not in families:
+                    families.append(font_name)
+        return sorted(families)
 
     def buildMonospaceFontList(self, valid=[]):
         """
@@ -378,8 +382,9 @@ class StylesheetManager(object):
         families = []
         for font_name in self._fonts.get('mono'):
             if font_name in valid:
-                families.append(font_name)
-        return families
+                if font_name not in families:
+                    families.append(font_name)
+        return sorted(families)
 
     def buildNodesFontList(self, valid=[]):
         """
@@ -392,8 +397,9 @@ class StylesheetManager(object):
         all_fonts = [x for fontlist in self._fonts.values() for x in fontlist]
         for font_name in all_fonts:
             if font_name in valid:
-                families.append(font_name)
-        return families
+                if font_name not in families:
+                    families.append(font_name)
+        return sorted(families)
 
     def font_defaults(self, platform=None, style='default'):
         """
@@ -426,7 +432,6 @@ class StylesheetManager(object):
 
 
 class StyleParser(object):
-
     """
     The StyleParse class reads stylesheets, parses config files and does sass-style
     replacements for properties.
@@ -438,9 +443,9 @@ class StyleParser(object):
         self.palette_style      = kwargs.get('palette_style', 'default')
         self.font_style         = kwargs.get('font_style', 'default')
 
-        self._stylesheet        = None
-        self._config_fonts      = None
-        self._config_palette    = None
+        self._stylesheet        = None        # qss stylesheet filename
+        self._config_palette    = None        # cfg color palette prefs filename
+        self._config_fonts      = None        # cfg font prefs filename
 
         self._data              = dict()
 

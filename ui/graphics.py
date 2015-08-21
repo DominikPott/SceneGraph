@@ -27,6 +27,7 @@ class GraphicsView(QtGui.QGraphicsView):
     statusEvent       = QtCore.Signal(dict)
     selectionChanged  = QtCore.Signal()
     nodesChanged      = QtCore.Signal(list)
+    scaleChanged      = QtCore.Signal(list)  
 
     def __init__(self, parent=None, ui=None, use_gl=False, debug=False, **kwargs):
         QtGui.QGraphicsView.__init__(self, parent)
@@ -38,6 +39,7 @@ class GraphicsView(QtGui.QGraphicsView):
         self.current_cursor_pos  = QtCore.QPointF(0, 0)
         self._nodes_to_copy      = []   
 
+        # initialize the GraphicsScenes
         self.initializeSceneGraph(ui.graph, ui, use_gl=use_gl, debug=debug)
         self.viewport_mode       = self._parent.viewport_mode
         
@@ -203,7 +205,8 @@ class GraphicsView(QtGui.QGraphicsView):
         """
         Update networkx graph attributes from the current UI.
 
-         .. todo::: check speed hit on this one
+        .. todo::
+        - check speed hit on this one
         """
         scene_attributes = self.getSceneAttributes()
         self.scene().network.graph.update(**scene_attributes)
@@ -238,6 +241,9 @@ class GraphicsView(QtGui.QGraphicsView):
         factor = 1.41 ** ((event.delta()*.5) / 240.0)
         self.scale(factor, factor)
         self._scale = factor
+
+        # callback
+        self.scaleChanged.emit(self.getScaleFactor())
 
     def mouseMoveEvent(self, event):
         """
@@ -447,18 +453,18 @@ class GraphicsScene(QtGui.QGraphicsScene):
     """
     def __init__(self, parent=None, graph=None, ui=None, **kwargs):
         QtGui.QGraphicsScene.__init__(self, parent)
-        
+
         self.ui             = ui
         self.edge_type      = ui.edge_type        
 
         # graph
         self.graph          = graph
         self.network        = graph.network
-        self.plug_mgr       = graph.plug_mgr
+        self.pm             = graph.pm
 
         # temp line for drawing edges
         self.line           = None
-        self.handler        = handlers.SceneEventHandler(self)
+        self.handler        = handlers.SceneEventHandler(self, view=parent)
         self.scenenodes     = dict()
 
         # temp attributes
@@ -552,8 +558,8 @@ class GraphicsScene(QtGui.QGraphicsScene):
         """
         Restore a working version of the scene.
 
-         .. todo::: need to rework the scene file format 
-                to update arbitrary nodes.
+        .. todo:: 
+            - need to rework the scene file format to update arbitrary nodes.
 
         :param dict data: node graph data.
         """
@@ -583,7 +589,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
 
                 if self.graph.is_node(dag):
                     if dag_id not in self.scenenodes:               
-                        widget = self.plug_mgr.get_widget(dag)
+                        widget = self.pm.get_widget(dag)
 
                         if not widget:
                             log.warning('invalid widget: "%s"' % dag.name)
@@ -636,11 +642,11 @@ class GraphicsScene(QtGui.QGraphicsScene):
 
             # nodes not found? Seeya
             if not source_node:
-                raise GraphException('invalid source id: "%s"' % srcid)
+                raise GraphException('invalid source id: "%s"' % src_id)
                 return False
 
             if not dest_node:
-                raise GraphException('invalid destination id: "%s"' % destid)
+                raise GraphException('invalid destination id: "%s"' % dest_id)
                 return False
 
             # get the relevant connection terminals

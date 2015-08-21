@@ -17,14 +17,16 @@
         private             BOOL      true
 
     [attr doc_text]
-        default             DOC       "Sample note text."
+        default             DOC       ""
         label               STRING    "Text"
 
-    [attr force_expand]
-        default             BOOL      false
-        label               STRING    "Expand Node"
-        private             BOOL      true  
+    [attr color]
+        default             COLOR     [255, 239, 62]
+        required            BOOL      true
+        desc                STRING    "node background color."
+        label               STRING    "Color"
 
     [attr show_name]
         default             BOOL      false
         label               STRING    "Show name"
+

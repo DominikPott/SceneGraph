@@ -80,7 +80,7 @@ QDockWidget::title{
     /* padding title bar 
     margin-left: 3px; */  
     border-radius: 2px;
-    border: 1px solid @dock-title-border-color;
+    /*border: 1px solid @dock-title-border-color;*/
 }
 
 /* margins seem to shrink button size */
@@ -93,14 +93,23 @@ QDockWidget::float-button, QDockWidget::close-button{
 
 QDockWidget::float-button:hover{
     /*titlebar-normal-icon: url(:/icons/icons/ui-dock-float-on.png);*/
+    image: url(:/icons/icons/ui-dock-float-hover.png);
+}
+
+QDockWidget::float-button:pressed{
+    /*titlebar-normal-icon: url(:/icons/icons/ui-dock-float-on.png);*/
     image: url(:/icons/icons/ui-dock-float-on.png);
 }
 
 QDockWidget::close-button:hover{
     /*titlebar-close-icon: url(:/icons/icons/ui-dock-close-on.png);*/
-    image: url(:/icons/icons/ui-dock-close-on.png);
+    image: url(:/icons/icons/ui-dock-close-hover.png);
 }
 
+QDockWidget::close-button:pressed{
+    /*titlebar-close-icon: url(:/icons/icons/ui-dock-close-on.png);*/
+    image: url(:/icons/icons/ui-dock-close-on.png);
+}
 /*
 ##### END DOCKS #####
 */
@@ -487,7 +496,7 @@ QTabBar {
 /* Style the tab using the tab sub-control */
 QTabBar::tab {    
     min-width: 6ex;
-    margin: 0 1px 0 1px; /* margin adds a pixel left/right of each tab */
+    margin: 0 0 0 0; /* margin adds a pixel left/right of each tab */
     padding: 0 10px 0 10px; /* padding adds 10px left/right of each tab title */
 }
 
@@ -510,6 +519,10 @@ QTabBar::tab::top{
     border-top-right-radius: 4px;
     padding-top: 3px;
     padding-bottom: 3px;
+    border-bottom: 1px solid @border-dark;
+    border-top: 1px solid @tab-border-color;
+    border-left: 1px solid @tab-border-color;
+    border-right: 1px solid @tab-border-color;
 }
 
 QTabBar::tab::top:!selected {
@@ -524,6 +537,9 @@ QTabBar::tab::bottom{
     padding-top: 3px;
     margin-bottom: 3px;
     border-top: 1px solid @border-dark;
+    border-bottom: 1px solid @tab-border-color;
+    border-left: 1px solid @tab-border-color;
+    border-right: 1px solid @tab-border-color;
 }
 
 QTabBar::tab::bottom:!selected {
@@ -562,8 +578,9 @@ QGroupBox::title {
 
 /* flat group line */
 QGroupBox::flat {
-    border: 2px groove @group-flat-border-color;
-    border-radius: 0px; 
+    border: 2px  @group-flat-border-color;
+    border-radius: 0px;
+    border-top-style: ridge;
     border-left-style: none;
     border-right-style: none;
     border-bottom-style: none;
@@ -770,6 +787,10 @@ QSpinBox::down-arrow:pressed, QDoubleSpinBox::down-arrow:pressed {
 QCheckBox::indicator {
     width: 13px;
     height: 13px;
+}
+
+QCheckBox::indicator:hover {
+    border: 1px solid @widget-bg-hover;
 }
 
 QCheckBox::indicator {

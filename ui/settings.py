@@ -15,7 +15,7 @@ class Settings(QtCore.QSettings):
         
         self._max_files     = max_files
         self._parent        = parent
-        self._stylesheet    = stylesheet.StylesheetManager(parent)
+        self._stylesheet    = stylesheet.StyleManager(parent)
         parent.stylesheet   = self._stylesheet
         self._groups        = ['MainWindow', 'RecentFiles', 'Preferences']
         self.initialize()
@@ -123,9 +123,10 @@ class Settings(QtCore.QSettings):
         :rtype: list
         """
         results = []
-        self.beginGroup('Preferences')
-        results = self.childKeys()
-        self.endGroup()
+        for option in options.SCENEGRAPH_PREFERENCES:
+            attrs = options.SCENEGRAPH_PREFERENCES.get(option)
+            if attrs.get('class', None) == 'scene':
+                results.append(option)
         return results
 
     def get_layouts(self):

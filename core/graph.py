@@ -9,8 +9,9 @@ from functools import partial
 import inspect
 from collections import OrderedDict as dict
 from SceneGraph import options
-from SceneGraph.core import log, PluginManager, Attribute, EventHandler
+from SceneGraph.core import log, Attribute, EventHandler
 from SceneGraph.core import nodes
+from SceneGraph.core import plugins
 from SceneGraph import util
 
 
@@ -23,6 +24,7 @@ class Graph(object):
 
         default_width                      = kwargs.pop('width', 150.0)
         default_height                     = kwargs.pop('height', 150.0)
+        plugin_paths                       = kwargs.pop('paths', [])
 
         # events
         self.nodesAdded                    = EventHandler(self)
@@ -37,14 +39,13 @@ class Graph(object):
 
         self.graphRefreshed                = EventHandler(self)
 
-
         #self.network                      = nx.DiGraph()
         self.network                       = nx.MultiDiGraph() # mutliple edges between nodes
         
         self.mode                          = 'standalone'
         self.grid                          = Grid(5, 5, width=default_width, height=default_height)
         self.handler                       = None
-        self.plug_mgr                      = PluginManager()
+        self.pm                            = plugins.PluginManager(paths=plugin_paths)
         self._initialized                  = 0
 
         # attributes for current nodes/dynamically loaded nodes
@@ -224,6 +225,7 @@ class Graph(object):
         """
         Evalute the Graph, updating networkx graph.
         """
+        #print '# DEBUG: evaluating graph...'
         result = True
         if not dagnodes:
             dagnodes = self.dagnodes.values()
@@ -251,6 +253,9 @@ class Graph(object):
                     invalid_node_ids.append(node_id)
                     log.warning('invalid NetworkX node "%s" ( %s )' % (node_attrs.get('name'), node_id))
                     result = False
+
+        # callback
+        #self.graphRefreshed()
         return result
 
     def is_node(self, obj):
@@ -270,7 +275,7 @@ class Graph(object):
         """
         Returns a list of node types.
         """
-        return self.plug_mgr.node_types(plugins=plugins, disabled=disabled)
+        return self.pm.node_types(plugins=plugins, disabled=disabled)
 
     #-- NetworkX Stuff -----
     def getScene(self):
@@ -433,7 +438,7 @@ class Graph(object):
         pos  = kwargs.pop('pos', self.grid.coords)
 
         # get the default name for the node type and validate it
-        name = self.get_valid_name(self.plug_mgr.default_name(node_type))
+        name = self.get_valid_name(self.pm.default_name(node_type))
 
         if 'name' in kwargs:
             name = kwargs.pop('name')
@@ -445,7 +450,7 @@ class Graph(object):
                 attributes[attr]=val
                 
         # get the dag node from the PluginManager
-        dag = self.plug_mgr.get_dagnode(node_type=node_type, name=name, pos=pos, _graph=self, attributes=attributes, **kwargs)
+        dag = self.pm.get_dagnode(node_type=node_type, name=name, pos=pos, _graph=self, attributes=attributes, **kwargs)
 
         # connect signals
         dag.nodeNameChanged += self.nodeNameChangedEvent
@@ -1396,12 +1401,12 @@ class Graph(object):
         """
         Prints a list of plugins.
         """
-        if self.plug_mgr._node_data:
+        if self.pm._plugin_data:
             print '-' * 35
-            print 'PLUGINS LOADED: %d' % (len(self.plug_mgr._node_data)) 
+            print 'PLUGINS LOADED: %d' % (len(self.pm._plugin_data)) 
 
         row = 0          
-        for node_type, data in self.plug_mgr._node_data.iteritems():
+        for node_type, data in self.pm._plugin_data.iteritems():
             widget = data.get('widget', None)
 
             if widget is not None:

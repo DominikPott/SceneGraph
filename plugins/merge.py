@@ -6,12 +6,13 @@ class MergeNode(DagNode):
     
     node_type     = 'merge'
     node_class    = 'evaluate'
-    node_category = 'builtin'
+    node_category = ''
+    plugin_type   = 'builtin'
     default_name  = 'merge'
     default_color = [255, 136, 136, 255]
 
     def __init__(self, name=None, **kwargs):
-        DagNode.__init__(self, name, **kwargs)
+        super(MergeNode, self).__init__(name, **kwargs)
 
     def execute(self):
         """

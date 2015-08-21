@@ -19,7 +19,7 @@ from SceneGraph.ui import graphics
 
 
 log = core.log
-SCENEGRAPH_UI = options.SCENEGRAPH_UI
+SCENEGRAPH_UI_FILE = options.SCENEGRAPH_UI_FILE
 
 
 def loadUiType(uiFile):
@@ -49,7 +49,7 @@ def loadUiType(uiFile):
 
 
 #If you put the .ui file for this example elsewhere, just change this path.
-form_class, base_class = loadUiType(SCENEGRAPH_UI)
+form_class, base_class = loadUiType(SCENEGRAPH_UI_FILE)
 
 
 class SceneGraphUI(form_class, base_class):
@@ -153,7 +153,8 @@ class SceneGraphUI(form_class, base_class):
         """
         Return the current SceneEventHandler.
 
-         .. todo::: probably should take this out, useful for debugging mostly.
+         .. todo::
+         - probably should take this out, useful for debugging mostly.
 
         :returns: SceneEventHandler instance.
         :rtype: SceneEventHandler
@@ -254,7 +255,7 @@ class SceneGraphUI(form_class, base_class):
         """
         # initialize the Graph
         self.graph = core.Graph()
-        self.network = self.graph.network        
+        self.network = self.graph.network  
 
         # add our custom GraphicsView object (gview is defined in the ui file)
         self.view = graphics.GraphicsView(self.gview, ui=self, use_gl=self.use_gl, edge_type=self.edge_type)
@@ -266,10 +267,10 @@ class SceneGraphUI(form_class, base_class):
 
         # disable plugins
         if self._valid_plugins:
-            for plugin in self.graph.plug_mgr.node_types():
+            for plugin in self.graph.pm.node_types():
                 if plugin not in self._valid_plugins:
                     log.info('disabling plugin "%s"' % plugin)
-                    self.graph.plug_mgr.node_types().get(plugin).update(enabled=False)
+                    self.graph.pm.node_types().get(plugin).update(enabled=False)
         
     def connectSignals(self):
         """
@@ -307,10 +308,12 @@ class SceneGraphUI(form_class, base_class):
 
         # debug menu
         self.action_reset_dots.triggered.connect(self.resetDotsAction)
-        self.action_evaluate.triggered.connect(self.evaluateScene)
         self.action_plugin_output.triggered.connect(self.evaluatePlugins)
         self.action_update_nodes.triggered.connect(self.graphAttributesAction)
         self.action_style_output.triggered.connect(self.stylesheetOutputAction)
+
+        self.action_evaluate_scene.triggered.connect(self.evaluateSceneAction)
+        self.action_evaluate_graph.triggered.connect(self.evaluateGraphAction)
 
         # preferences
         self.ignore_scene_prefs_check.toggled.connect(self.toggleIgnore)
@@ -708,7 +711,7 @@ class SceneGraphUI(form_class, base_class):
         """
         Save the current graph file.
 
-         .. todo::: 
+         .. todo::
             - combine this with saveGraphAs
         """
         if not self.graph.getScene():
@@ -879,7 +882,8 @@ class SceneGraphUI(form_class, base_class):
         """
         Toggle rendering of node effects.
 
-         .. todo::: this probably belongs in GraphicsView/Scene.
+         .. todo::
+        - this probably belongs in GraphicsView/Scene.
         """
         self.render_fx = val
         log.info('toggling effects %s' % ('on' if val else 'off'))
@@ -1396,6 +1400,7 @@ class SceneGraphUI(form_class, base_class):
             render_fx = self.qsettings.value("render_fx")
             self.render_fx = False
             if render_fx is not None:
+                print 'render fx: ', render_fx
                 self.render_fx = bool(int(render_fx))
 
         # edge type (scene)
@@ -1489,7 +1494,7 @@ class SceneGraphUI(form_class, base_class):
                 continue
             self.qsettings.setValue(fattr, getattr(self, fattr))
 
-        self.qsettings.setValue('plugins', self.graph.plug_mgr.valid_plugins)
+        self.qsettings.setValue('plugins', self.graph.pm.valid_plugins)
 
         self.qsettings.endGroup()
         # write the dock settings
@@ -1693,11 +1698,17 @@ class SceneGraphUI(form_class, base_class):
         self.nodesModel.addNodes(nodes)
         self.edgesModel.addEdges(edges)
 
-    def evaluateScene(self):
+    def evaluateSceneAction(self):
         """
-        Evaluate the current scene.
+        DEBUG: Evaluate the current scene.
         """
         self.view.scene().evaluate()
+
+    def evaluateGraphAction(self):
+        """
+        DEBUG: Evaluate the current graph.
+        """
+        self.graph.evaluate()
 
     def evaluatePlugins(self):
         """

@@ -9,7 +9,7 @@ log = core.log
 
 
 class SceneEventHandler(QtCore.QObject):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, view=None):
         QtCore.QObject.__init__(self, parent)
    
         self.ui             = None    # reference to the parent MainWindow
@@ -19,14 +19,16 @@ class SceneEventHandler(QtCore.QObject):
         if parent is not None:
             self.ui = parent.ui
 
-            # connections to parent menuitems
-            self.ui.action_evaluate.triggered.connect(self.evaluate)
-            self.ui.action_update_graph.triggered.connect(self.graphUpdated)
-
-            if not self.connectGraph(parent):
+            if not self.connectGraph(parent, view):
                 log.error('cannot connect SceneEventHandler to Graph.')
 
     def updateStatus(self, msg, level='info'):
+        """
+        Update the MainWindow's status bar.
+
+        :param str msg: message to pass.
+        :param str level: severity level.
+        """
         self.ui.updateStatus(msg, level=level)
 
     @property 
@@ -53,7 +55,7 @@ class SceneEventHandler(QtCore.QObject):
     def undo_stack(self):
         return self.ui.undo_stack
 
-    def connectGraph(self, scene):
+    def connectGraph(self, scene, view):
         """
         Connect the parent scenes' Graph object.
 
@@ -68,6 +70,8 @@ class SceneEventHandler(QtCore.QObject):
                 self.graph = graph
                 self.graph.handler = self
 
+                view.scaleChanged.connect(self.scaleChangedEvent)
+
                 # connect graph signals
                 self.graph.nodesAdded += self.nodesAddedEvent
                 self.graph.edgesAdded += self.edgesAddedEvent
@@ -77,11 +81,12 @@ class SceneEventHandler(QtCore.QObject):
 
                 self.graph.graphRead += self.graphReadEvent
 
+
                 self.graph.mode = 'ui'
                 log.info('SceneHandler: connecting Graph...')
 
                 # load the node widgets from disk
-                #self.graph.plug_mgr.load_widgets()
+                #self.graph.pm.load_widgets()
 
                 # start the autosave timer for 2min (120s x 1000)
                 self.ui.autosave_timer.start(30000)
@@ -114,6 +119,9 @@ class SceneEventHandler(QtCore.QObject):
     def restoreGeometry(self, **kwargs):
         """
         Retore scene geometry.
+
+        :param tuple pos: view center position.
+        :param tuple scale: view zoom level.
         """
         pos = kwargs.pop('pos', (0.0, 0.0))
         scale = kwargs.pop('scale', (1.0, 1.0))
@@ -150,6 +158,15 @@ class SceneEventHandler(QtCore.QObject):
         new_snapshot = self.graph.snapshot()
         self.undo_stack.push(commands.SceneNodesCommand(old_snapshot, new_snapshot, self.scene, msg='edges added'))
 
+    def scaleChangedEvent(self, scale):
+        """
+        Runs when the scale changes in the viewport.
+        """
+        sx, sy = scale
+        for node in self.scene.items():
+            if hasattr(node, '_view_scale'):
+                node._view_scale = sx * 0.5
+
     def removeSceneNodes(self, nodes):
         """
         Signal Graph when the scene is updated.
@@ -184,9 +201,9 @@ class SceneEventHandler(QtCore.QObject):
         new_snapshot = self.graph.snapshot()
         self.undo_stack.push(commands.SceneNodesCommand(old_snapshot, new_snapshot, self.scene, msg='nodes deleted'))
 
-    def getInterfacePreferences(self):
+    def getScenePreferences(self):
         """
-        Get interface preferences from the QSettings.
+        Get scene interface preferences from the QSettings.
 
         :returns: ui attributes.
         :rtype: dict
@@ -205,7 +222,7 @@ class SceneEventHandler(QtCore.QObject):
         :returns: interface preferences.
         :rtype: dict
         """
-        result = self.getInterfacePreferences()
+        result = self.getScenePreferences()
         self.graph.updateGraphPreferences(**result)
 
     def graphUpdated(self, *args):

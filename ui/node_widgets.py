@@ -26,8 +26,10 @@ class NodeWidget(QtGui.QGraphicsObject):
         # attributes
         self.bufferX         = 3
         self.bufferY         = 3
-        self.pen_width       = 1.5                    # pen width for NodeBackground  
-
+        self._pen_width      = 1.0                    # pen width for NodeBackground  
+        self._view_scale     = 1                      # current view scale
+        self.radius          = 7.0                    # rectangle radius
+        
         # widget colors
         self._l_color        = [5, 5, 5, 255]         # label color
         self._p_color        = [10, 10, 10, 255]      # pen color (outer rim)
@@ -174,6 +176,23 @@ class NodeWidget(QtGui.QGraphicsObject):
     def is_expanded(self):
         return len(self.inputs) > 1 or len(self.outputs) > 1 or self.dagnode.force_expand
 
+    @property
+    def pen_width(self):
+        """
+        Pen width is multiplied by view scale
+        """
+        w = self._pen_width * self._view_scale
+        if w > self._pen_width:
+            w = self._pen_width
+        return w
+
+    @pen_width.setter
+    def pen_width(self, val):
+        """
+        Set the base pen width.
+        """
+        self._pen_width = val
+
     #- TESTING ---
     def labelDoubleClickedEvent(self):
         """
@@ -299,8 +318,8 @@ class NodeWidget(QtGui.QGraphicsObject):
         """
         Return the first output connection center point.
 
-        returns:
-            (QPointF) - output connection position.
+        :returns: output connection position.
+        :rtype: QtCore.QPointF
         """
         rect = self.boundingRect()
         width = rect.width()
@@ -378,8 +397,8 @@ class NodeWidget(QtGui.QGraphicsObject):
         """
         Returns a list of dagnode input connections.
 
-        returns:
-            (list) - list of input connections.
+        :returns:  list of input connections.
+        :rtype: list
         """
         return self.dagnode.inputs
 
@@ -388,8 +407,8 @@ class NodeWidget(QtGui.QGraphicsObject):
         """
         Returns a list of dagnode output connections.
 
-        returns:
-            (list) - list of output connections.
+        :returns:  list of output connections.
+        :rtype: list
         """
         return self.dagnode.outputs
 
@@ -397,8 +416,8 @@ class NodeWidget(QtGui.QGraphicsObject):
         """
         Returns a list of input connection widgets.
 
-        returns:
-            (list) - list of input connection widgets.
+        :returns: list of input connection widgets.
+        :rtype: list
         """
         return self.connections.get('input').values()
 
@@ -406,8 +425,8 @@ class NodeWidget(QtGui.QGraphicsObject):
         """
         Returns a list of output connection widgets.
 
-        returns:
-            (list) - list of output connection widgets.
+        :returns: list of output connection widgets.
+        :rtype: list
         """
         return self.connections.get('output').values()
 
@@ -415,8 +434,8 @@ class NodeWidget(QtGui.QGraphicsObject):
         """
         Returns a named connection.
 
-        returns:
-            (Connection) - connection widget.
+        :returns: connection widget.
+        :rtype: Connection
         """
         if name not in self.inputs:
             return 
@@ -426,8 +445,8 @@ class NodeWidget(QtGui.QGraphicsObject):
         """
         Returns a named connection.
 
-        returns:
-            (Connection) - connection widget.
+        :returns: connection widget.
+        :rtype: Connection
         """
         if name not in self.outputs:
             return 
@@ -904,11 +923,20 @@ class EdgeWidget(QtGui.QGraphicsObject):
     def getBezierPath(self, poly=False):
         """
         Returns a bezier path based on the current line.
-        Crude, but works.
+        Crude, but works. Derp
         """
         line = self.getLine()
         path = QtGui.QPainterPath()
         path.moveTo(line.p1().x(), line.p1().y())
+
+        c1_dot = False
+        c2_dot = False
+
+        if self.source_node.dagnode.node_type == 'dot':
+            c1_dot = True
+
+        if self.dest_node.dagnode.node_type == 'dot':
+            c2_dot = True
 
         # some very crude bezier math here
         x1 = line.p1().x()
@@ -924,6 +952,9 @@ class EdgeWidget(QtGui.QGraphicsObject):
         dx = math.fabs(dx)
         # bezier percentage
         t = .25
+
+        if c1_dot or c2_dot:
+            t = 0.075
 
         # x coord
         cx1 = x1 + (dx * t)
@@ -1104,7 +1135,8 @@ class Connection(QtGui.QGraphicsObject):
 
         # globals
         self.draw_radius    = 4.0
-        self.pen_width      = 1.5
+        self._pen_width     = 1.0
+        self._view_scale    = 1                      # current view scale
         self.radius         = self.draw_radius*4
         self.buffer         = 2.0
         self.node_shape     = 'circle'        
@@ -1191,6 +1223,23 @@ class Connection(QtGui.QGraphicsObject):
         return self.node.is_expanded
 
     @property
+    def pen_width(self):
+        """
+        Pen width is multiplied by view scale
+        """
+        w = self._pen_width * self._view_scale
+        if w > self._pen_width:
+            w = self._pen_width
+        return w
+
+    @pen_width.setter
+    def pen_width(self, val):
+        """
+        Set the base pen width.
+        """
+        self._pen_width = val
+
+    @property
     def max_connections(self):
         """
         :returns: max number of connections that this connection can accept.
@@ -1252,8 +1301,8 @@ class Connection(QtGui.QGraphicsObject):
         """
         Returns the connection pen color.
 
-        returns:
-            (QColor) - widget pen color.
+        :returns: widget pen color.
+        :rtype" QtGui.QColor
         """
         return self.bg_color.darker(250)
 
@@ -1262,8 +1311,8 @@ class Connection(QtGui.QGraphicsObject):
         """
         Returns the widget label color.
 
-        returns:
-            (QColor) - widget label color.
+        :returns: widget label color.
+        :rtype" QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[50, 50, 50, 128])
@@ -1299,8 +1348,8 @@ class Connection(QtGui.QGraphicsObject):
         Returns true if the node is an input
         connection in the graph.
 
-        returns:
-            (bool) - widget is an input connection.
+        :returns:  widget is an input connection.
+        :rtype: bool
         """
         return self.dagconn.is_input
 
@@ -1309,8 +1358,8 @@ class Connection(QtGui.QGraphicsObject):
         Returns true if the node is an output
         connection in the graph.
 
-        returns:
-            (bool) - widget is an output connection.
+        :returns:  widget is an output connection.
+        :rtype: bool
         """
         return not self.dagconn.is_input
 
@@ -1473,7 +1522,8 @@ class DotWidget(QtGui.QGraphicsObject):
         # attributes
         self.bufferX         = 3
         self.bufferY         = 3
-        self.pen_width       = 1.5                    # pen width for NodeBackground  
+        self._pen_width      = 1.0                    # pen width for NodeBackground  
+        self._view_scale     = 1                      # current view scale
 
         # widget colors
         self._l_color        = [5, 5, 5, 255]         # label color
@@ -1687,6 +1737,23 @@ class DotWidget(QtGui.QGraphicsObject):
     def is_expanded(self):
         return False
 
+    @property
+    def pen_width(self):
+        """
+        Pen width is multiplied by view scale
+        """
+        w = self._pen_width * self._view_scale
+        if w > self._pen_width:
+            w = self._pen_width
+        return w
+
+    @pen_width.setter
+    def pen_width(self, val):
+        """
+        Set the base pen width.
+        """
+        self._pen_width = val
+
     #- Events ----
     def update_observer(self, obs, event, *args, **kwargs):
         """
@@ -1757,8 +1824,8 @@ class DotWidget(QtGui.QGraphicsObject):
         """
         Create the shape for collisions.
 
-        returns:
-            (QPainterPath) - painter path object.
+        :returns: painter path object.
+        :rtype: QtGui.QPainterPath
         """
         w = self.width + 4
         h = self.height + 4
@@ -1779,8 +1846,8 @@ class DotWidget(QtGui.QGraphicsObject):
         """
         Returns the widget background color.
 
-        returns:
-            (QColor) - widget background color.
+        :returns:  widget background color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[125, 125, 125])
@@ -1798,8 +1865,8 @@ class DotWidget(QtGui.QGraphicsObject):
         """
         Returns the widget pen color.
 
-        returns:
-            (QColor) - widget pen color.
+        :returns:  widget pen color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[40, 40, 40])
@@ -1812,8 +1879,8 @@ class DotWidget(QtGui.QGraphicsObject):
         """
         Returns the widget label color.
 
-        returns:
-            (QColor) - widget label color.
+        :returns:  widget label color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[50, 50, 50])
@@ -1827,8 +1894,8 @@ class DotWidget(QtGui.QGraphicsObject):
         Returns the node shadow color, as dictated
         by the dagnode.
 
-        returns:
-            (QColor) - shadow color.
+        :returns:  widget shadow color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[35, 35, 35, 60])
@@ -1842,8 +1909,8 @@ class DotWidget(QtGui.QGraphicsObject):
         """
         Returns a list of dagnode input connections.
 
-        returns:
-            (list) - list of input connections.
+        :returns:  list of input connections.
+        :rtype: list
         """
         return self.dagnode.inputs
 
@@ -1890,8 +1957,8 @@ class DotWidget(QtGui.QGraphicsObject):
         """
         Returns a named connection.
 
-        returns:
-            (DotConnection) - connection widget.
+        :returns:  connection widget.
+        :rtype: Connection
         """
         if name not in self.outputs:
             return 
@@ -1901,8 +1968,8 @@ class DotWidget(QtGui.QGraphicsObject):
         """
         Returns a named connection.
 
-        returns:
-            (DotConnection) - connection widget.
+        :returns:  connection widget.
+        :rtype: Connection
         """
         if name not in self.inputs and name not in self.outputs:
             return 
@@ -2010,7 +2077,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         self.corner_size     = 20
         self.bufferX         = 3
         self.bufferY         = 3
-        self.pen_width       = 1.5                            # pen width for NoteBackground  
+        self._pen_width      = 1.0                            # pen width for NoteBackground 
+        self._view_scale     = 1                              # current view scale 
         self.handle_size     = 6                              # size of the resize handle
           
         # fonts
@@ -2121,6 +2189,23 @@ class NoteWidget(QtGui.QGraphicsObject):
     def is_expanded(self):
         return False
 
+    @property
+    def pen_width(self):
+        """
+        Pen width is multiplied by view scale
+        """
+        w = self._pen_width * self._view_scale
+        if w > self._pen_width:
+            w = self._pen_width
+        return w
+
+    @pen_width.setter
+    def pen_width(self, val):
+        """
+        Set the base pen width.
+        """
+        self._pen_width = val
+
     #- Events ----
     def hoverMoveEvent(self,event):
         QtGui.QGraphicsItem.hoverMoveEvent(self, event)
@@ -2229,8 +2314,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         """
         Create the shape for collisions.
 
-        returns:
-            (QPainterPath) - painter path object.
+        :returns:  painter path object.
+        :rtype: QtGui.QPainterPath
         """
         w = self.width + 4
         h = self.height + 4
@@ -2251,8 +2336,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         """
         Returns the widget background color.
 
-        returns:
-            (QColor) - widget background color.
+        :returns: widget background color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[125, 125, 125])
@@ -2270,8 +2355,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         """
         Returns the widget pen color.
 
-        returns:
-            (QColor) - widget pen color.
+        :returns: widget pen color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[40, 40, 40])
@@ -2284,8 +2369,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         """
         Returns the widget label color.
 
-        returns:
-            (QColor) - widget label color.
+        :returns: widget label color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[50, 50, 50])
@@ -2299,8 +2384,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         Returns the node shadow color, as dictated
         by the dagnode.
 
-        returns:
-            (QColor) - shadow color.
+        :returns: widget shadow color.
+        :rtype: QtGui.QColor
         """
         if not self.is_enabled:
             return QtGui.QColor(*[35, 35, 35, 60])
@@ -2312,8 +2397,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         """
         Returns a note-shaped polygon (based on the current boundingRect)
 
-        returns:
-            (QPolygonF) - note-shaped polygon
+        :returns:  note-shaped polygon.
+        :rtype: QtCore.QPolygonF
         """
         rect = self.boundingRect()
 
@@ -2331,8 +2416,8 @@ class NoteWidget(QtGui.QGraphicsObject):
         """
         Returns a corner polygon (based on the current boundingRect)
 
-        returns:
-            (QPolygonF) - corner polygon
+        :returns:  corner polygon.
+        :rtype: QtCore.QPolygonF
         """
         rect = self.boundingRect()
 
@@ -2718,7 +2803,7 @@ class NodeBackground(QtGui.QGraphicsItem):
 
         painter.setPen(qpen)
         painter.setBrush(qbrush)
-        painter.drawRoundedRect(self.boundingRect(), 7, 7)
+        painter.drawRoundedRect(self.boundingRect(), self.node.radius, self.node.radius)
 
         # line pen #1
         lcolor = self.node.pen_color

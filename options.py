@@ -29,7 +29,7 @@ def setup_platform_defaults():
 
 PACKAGE                         = 'SceneGraph'
 API_MAJOR_VERSION               = 0.69
-API_REVISION                    = 0
+API_REVISION                    = 2
 API_VERSION                     = float('%s%s' % (API_MAJOR_VERSION, API_REVISION))
 API_VERSION_AS_STRING           = '%.02f.%d' % (API_MAJOR_VERSION, API_REVISION)
 PLATFORM                        = None
@@ -41,7 +41,8 @@ PLATFORM, USER_HOME             = setup_platform_defaults()
 SCENEGRAPH_PATH                 = os.path.dirname(__file__)
 SCENEGRAPH_CORE                 = os.path.join(SCENEGRAPH_PATH, 'core')
 SCENEGRAPH_PLUGIN_PATH          = os.path.join(SCENEGRAPH_PATH, 'plugins')
-SCENEGRAPH_UI                   = os.path.join(SCENEGRAPH_PATH, 'ui', 'SceneGraph.ui')
+SCENEGRAPH_UI                   = os.path.join(SCENEGRAPH_PATH, 'ui')
+SCENEGRAPH_UI_FILE              = os.path.join(SCENEGRAPH_UI, 'SceneGraph.ui')
 SCENEGRAPH_ATTR_EDITOR_UI       = os.path.join(SCENEGRAPH_PATH, 'ui', 'designer', 'NodeAttributes.ui')
 SCENEGRAPH_ICON_PATH            = os.path.join(SCENEGRAPH_PATH, 'icn')
 SCENEGRAPH_STYLESHEET_PATH      = os.path.join(SCENEGRAPH_PATH, 'qss')
@@ -151,3 +152,5 @@ VIEWPORT_MODES = dict(
     minimal = 'QtGui.QGraphicsView.MinimalViewportUpdate',
     )
 
+
+NODE_CLASSES = ['command','math','file','mapping','output','globals','display','container','misc']
