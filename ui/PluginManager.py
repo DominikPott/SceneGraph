@@ -32,6 +32,12 @@ class PluginManager(QtGui.QMainWindow):
             style_data = self.stylesheet.style_data()
             self.setStyleSheet(style_data)
             self.qsettings = settings.Settings(self.settings_file, QtCore.QSettings.IniFormat, parent=self)
+            self.readSettings()
+
+            if self._valid_plugins:
+                for plugin in self.plugin_manager.node_types():
+                    if plugin not in self._valid_plugins:
+                        self.plugin_manager.node_types().get(plugin).update(enabled=False)
 
         self.setupFonts()
         
@@ -200,11 +206,16 @@ class PluginManager(QtGui.QMainWindow):
         plugins = self.selectedPlugins()
 
         enabled = True
+        is_core = False
         if plugins:
             for plugin in plugins:
-                plugin_name = [self.tableModel.PLUGIN_NAME_ROLE]
+                plugin_type = plugin[self.tableModel.PLUGIN_CLASS_ROLE]
+                plugin_name = plugin[self.tableModel.PLUGIN_NAME_ROLE]
+
                 if not plugin[self.tableModel.PLUGIN_ENABLED_ROLE]:
                     enabled = False
+                if plugin_type == 'core':
+                    is_core = True
 
         button_text = 'Disable'
         if not enabled:
@@ -212,6 +223,8 @@ class PluginManager(QtGui.QMainWindow):
 
         self.button_disable.setText(button_text)
         self.buildPluginInfo(plugins)
+
+        self.button_disable.setEnabled(not is_core)
 
     def disabledAction(self):
         indexes = self.tableSelectionModel.selectedRows()
@@ -234,6 +247,9 @@ class PluginManager(QtGui.QMainWindow):
         self.close()
 
     def readSettings(self):
+        """
+        Read settings from disk.
+        """
         self.qsettings.beginGroup("Preferences")
         # update valid plugin types
         plugins = self.qsettings.value("plugins")
@@ -246,6 +262,9 @@ class PluginManager(QtGui.QMainWindow):
         self.qsettings.endGroup()
 
     def writeSettings(self):
+        """
+        Write settings to disk.
+        """
         self._valid_plugins = self.plugin_manager.valid_plugins
         self.qsettings.beginGroup('Preferences')
         self.qsettings.setValue('plugins', self.plugin_manager.valid_plugins)

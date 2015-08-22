@@ -108,11 +108,12 @@ Place your custom plugin somewhere in the SCENEGRAPH_PLUGIN_PATH_. You'll need t
     class MyNode(DagNode):
         node_type     = 'myNode'
         node_class    = 'container'
+        node_category = ''
+        plugin_type   = ''
         default_name  = 'my_node'
         default_color = [172, 172, 172, 255]
-
         def __init__(self, name=None, **kwargs):
-            DagNode.__init__(self, name, **kwargs)
+            super(MyNode), self).__init__(name, **kwargs)
 
 
 To register the node as a valid type, you'll need to add attributes for the class: **node_type** and **node_class**. Additionally, you can add a descriptor attribute **node_category**.
@@ -130,7 +131,7 @@ After that, let's create a widget plugin:
         widget_type  = 'myNode'
         node_class   = 'container'
         def __init__(self, dagnode, parent=None):
-            NodeWidget.__init__(self, dagnode, parent)
+            super(MyNodeWidget, self).__init__(dagnode, parent)
 
 
 You'll need to make sure that the widget has an attribute **widget_type** that matches the base node type you've just created.

@@ -1292,12 +1292,22 @@ class SceneGraphUI(form_class, base_class):
         menu_node_color = QtGui.QMenu('Node color: ', parent)
         menu_node_attributes = QtGui.QMenu('Attributes: ', parent)
 
+
+        categories = self.graph.pm.node_categories
+
         # build the add node menu
         if add:
-            for node in self.graph.node_types():
-                node_action = menu_add_node.addAction(node)
-                # add the node at the scene pos
-                node_action.triggered.connect(partial(self.graph.add_node, node_type=node, pos=[pos.x(), pos.y()]))
+            for category in categories:
+                cat_menu = QtGui.QMenu(category)
+                for node in sorted(self.graph.node_types().keys()):
+                    node_category = self.graph.node_types().get(node).get('category')
+                    if node_category == category:
+                        node_action = cat_menu.addAction(node)
+                        # add the node at the scene pos
+                        node_action.triggered.connect(partial(self.graph.add_node, node_type=node, pos=[pos.x(), pos.y()]))
+
+                cat_menu.setStyleSheet(self.styleSheet())
+                menu_add_node.addMenu(cat_menu)
 
         # build the color menu
         if color:
@@ -1340,6 +1350,7 @@ class SceneGraphUI(form_class, base_class):
         tab_menu = QtGui.QMenu(parent)
         tab_menu.clear()
         add_menu = QtGui.QMenu('Add node:')
+        categories = self.graph.pm.node_categories
 
         style_data = self.styleSheet()
 
@@ -1353,11 +1364,18 @@ class SceneGraphUI(form_class, base_class):
         view_pos =  self.view.current_cursor_pos
         scene_pos = self.view.mapToScene(view_pos)
 
-        for node in self.graph.node_types():
-            node_action = QtGui.QAction(node, parent)
-            add_menu.addAction(node_action)
-            # add the node at the scene pos
-            node_action.triggered.connect(partial(self.graph.add_node, node_type=node, pos=(scene_pos.x(), scene_pos.y())))
+        for category in categories:
+            cat_menu = QtGui.QMenu(category)
+            for node in sorted(self.graph.node_types().keys()):
+                node_category = self.graph.node_types().get(node).get('category')
+                if node_category == category:
+                    node_action = QtGui.QAction(node, parent)
+                    cat_menu.addAction(node_action)
+                    # add the node at the scene pos
+                    node_action.triggered.connect(partial(self.graph.add_node, node_type=node, pos=(scene_pos.x(), scene_pos.y())))
+            
+            cat_menu.setStyleSheet(style_data)
+            add_menu.addMenu(cat_menu)
 
         tab_menu.exec_(qcurs.pos())
 

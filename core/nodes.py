@@ -76,7 +76,8 @@ class Node(object):
         return json.dumps(self.data, default=lambda obj: obj.data, indent=4)
 
     def __repr__(self):
-        return json.dumps(self.data, default=lambda obj: obj.data, indent=4)
+        #return json.dumps(self.data, default=lambda obj: obj.data, indent=4)
+        return "%s('%s')" % (self.Class(), self.name)
     
     def __getattr__(self, name):
         if name in self._attributes:
@@ -781,7 +782,7 @@ class DefaultNode(DagNode):
     default_color = [172, 172, 172, 255]    
 
     def __init__(self, name=None, **kwargs):
-        DagNode.__init__(self, name, **kwargs)
+        super(DefaultNode, self).__init__(name, **kwargs)
 
 
 class DotNode(DagNode):
@@ -794,7 +795,7 @@ class DotNode(DagNode):
     default_color = [172, 172, 172, 255]
 
     def __init__(self, name=None, **kwargs):
-        DagNode.__init__(self, name, **kwargs)
+        super(DotNode, self).__init__(name, **kwargs)
 
         self.radius             = 8.0
         self.orientation        = 'dot'
@@ -855,7 +856,7 @@ class NoteNode(Node):
     default_color = [255, 239, 62, 255]    
 
     def __init__(self, name=None, **kwargs):
-        Node.__init__(self, name, **kwargs)
+        super(NoteNode, self).__init__(name, **kwargs)
 
         self.corner_loc     = 'top'   
         self.base_height    = 75

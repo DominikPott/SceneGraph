@@ -39,19 +39,20 @@ class PluginManager(object):
         if not self._external_plugin_paths:
             self._external_plugin_paths = self.initializeExternalPaths()
         
-
         self.run()
 
     def run(self):
           """
-          Create the plugin diction
+          Scan for plugins.
+
+          :returns: plugin data
+          :rtype: dict
           """
           self._plugin_data = load_plugins(self.plugin_paths)
  
-
     def initializeExternalPaths(self):
         """
-        Builds a list of external plugins paths. 
+        Builds a list of external plugins paths, and adds them to the system path.
 
         :returns: plugin scan paths.
         :rtype: tuple 
@@ -61,7 +62,9 @@ class PluginManager(object):
         if ext_pp:
             for path in ext_pp.split(':'):
                 result = result + (path,)
-                sys.path.insert(0, os.path.dirname(path))
+                ppath = os.path.split(path)[0]
+                sys.path.insert(0, ppath)
+                log.debug('adding external plugin search path: "%s"' % ppath)
         return list(result)
     
     @property
@@ -77,12 +80,6 @@ class PluginManager(object):
             for path in self._external_plugin_paths:
                 result = result + (path,)
         return result
-
-    def setLogLevel(self, level):
-        """
-         * debugging.
-        """
-        log.level = level
 
     #- Attributes ----
     def node_types(self, plugins=[], disabled=False):
@@ -290,7 +287,7 @@ class PluginManager(object):
 
         dag = self._plugin_data.get(node_type).get('dagnode')
         # assign the node metadata file
-        result = dag(_metadata=self._plugin_data.get(node_type).get('metadata', None), **kwargs)
+        result = dag(**kwargs)
         return result
 
     def get_widget(self, dagnode, **kwargs):
@@ -384,6 +381,7 @@ def load_class(classpath):
     :returns:  imported class object.
     :rtype: object
     """
+    log.debug('loading "%s"' % classpath)
     class_data = classpath.split(".")
     module_path = ".".join(class_data[:-1])
     class_str = class_data[-1]
@@ -422,13 +420,16 @@ def load_plugins(paths, plugins=[]):
 
     for loader, mod_name, is_pkg in pkgutil.walk_packages(paths):
 
-        pkg = '%s.%s.%s' % (PACKAGE, os.path.split(loader.path)[-1], mod_name)
-
         m = loader.find_module(mod_name)
         module = m.load_module(mod_name)
 
         # source filename
         src_file = m.filename
+
+        # if the path is external, don't add PACKAGE to the variable
+        pkg = '%s.%s' % (os.path.split(loader.path)[-1], mod_name)        
+        if SCENEGRAPH_PATH in src_file:
+            pkg = '%s.%s.%s' % (PACKAGE, os.path.split(loader.path)[-1], mod_name)
 
         for cname, obj in inspect.getmembers(module, inspect.isclass):
 
@@ -460,6 +461,10 @@ def load_plugins(paths, plugins=[]):
             node_type = getattr(obj, 'node_type')
             node_class = getattr(obj, 'node_class')
             node_category = getattr(obj, 'node_category')
+
+            # temp fix for categories
+            if not node_category:
+                node_category = 'default'
 
             # plugin type (core, builtin, external)
             plugin_type = 'external'            
@@ -493,10 +498,6 @@ def load_plugins(paths, plugins=[]):
                 plugin_data.get(node_type).update(metadata=mtd_file)
             else:
                 log.warning('cannot find metadata file "%s"' % mtd_file)
-
-            if plugin_data.get(node_type).get('dagnode') is not None and plugin_data.get(node_type).get('widget') is not None:
-                log.info('enabling plugin "%s"' % node_type)
-                plugin_data.get(node_type).update(enabled=True)
 
     return plugin_data
 

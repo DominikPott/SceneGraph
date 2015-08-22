@@ -238,6 +238,8 @@ class Graph(object):
             if self.is_node(node):
                 if node.id not in node_ids:
                     node_ids.append(node.id)
+            else:
+                log.warning('"%s" has invalid node class: "%s", check options.NODE_CLASSES' % (node.name, node.node_class))
 
         if self.network.edges():
             for edge in self.network.edges_iter(data=True):
@@ -251,7 +253,7 @@ class Graph(object):
                 node_id, node_attrs = node
                 if node_id not in node_ids:
                     invalid_node_ids.append(node_id)
-                    log.warning('invalid NetworkX node "%s" ( %s )' % (node_attrs.get('name'), node_id))
+                    #log.warning('invalid NetworkX node "%s" ( %s )' % (node_attrs.get('name'), node_id))
                     result = False
 
         # callback
@@ -267,8 +269,8 @@ class Graph(object):
         :rtype: bool
         """
         if hasattr(obj, 'node_class'):
-            if obj.node_class in ['dagnode', 'dot', 'note', 'container', 'evaluate', 'output']:
-                return True
+            #if obj.node_class in options.NODE_CLASSES:
+            return True
         return False
 
     def node_types(self, plugins=[], disabled=False):
@@ -1419,6 +1421,7 @@ class Graph(object):
                 print '%s\nPlugin: %s\n%s' % ('-' *35, node_type, '-' * 35)
             else:
                 print '\n%s\nPlugin: %s\n%s' % ('-' *35, node_type, '-' * 35)
+            print 'plugin_type: %s' % data.get('plugin_type')
             print 'source file: %s' % data.get('source')
             print 'metadata:    %s' % data.get('metadata')
             print 'class:       %s' % data.get('class')

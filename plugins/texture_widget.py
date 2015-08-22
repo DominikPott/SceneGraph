@@ -5,5 +5,5 @@ from SceneGraph.ui.node_widgets import NodeWidget
 class TextureWidget(NodeWidget):
     widget_type  = 'texture'
     def __init__(self, dagnode, parent=None):
-        NodeWidget.__init__(self, dagnode, parent)
+        super(TextureWidget, self).__init__(dagnode, parent)
         

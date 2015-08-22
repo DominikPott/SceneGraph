@@ -5,5 +5,5 @@ from SceneGraph.ui.node_widgets import NodeWidget
 class MergeWidget(NodeWidget):
     widget_type  = 'merge'
     def __init__(self, dagnode, parent=None):
-        NodeWidget.__init__(self, dagnode, parent)
+        super(MergeWidget, self).__init__(dagnode, parent)
 
